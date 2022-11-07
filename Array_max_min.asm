@@ -1,12 +1,13 @@
 section .data
-    space		db  20h, 0h
-    min	        dd	1000000
-	max		    dd	0
+    space	db  20h, 0h
+    min	        dd  1000000
+    max		dd  0
     line_feed   db  0Ah, 0h
 
 section .bss
-    input		resb	30 
-	output		resb	30 
+    input		resb	30
+    input1		resb	30  
+    output		resb	30 
     len			resd	1
 section .text
     global _start
@@ -23,41 +24,57 @@ _start:
         mov     [len], eax
 
     L1:
-        cmp		BYTE [len], 0
-	    jz		L4
         mov     ecx, input
         mov     edx, 30
         mov     ebx, 0
         mov     eax, 3
         int     80h
-        dec     BYTE [len]
-        push    input
-        call    ATOI
-        mov		ebx, 0
-	    mov		ebx, eax
-	    cmp		ebx, [max]
-	    jg		L3
-	    jmp		L2
+        mov  	esi, input
+        mov     edi, input1
+    L2:
+        cmp	byte [esi], 0Ah
+	je      L4
+	cmp	byte [esi], 20h
+	je      L3
+	mov	al, byte [esi]
+	mov	[edi], al
+	inc	edi
+	inc	esi
+	jmp	L2
 
-    L2:	
-	    cmp		ebx, [min]
-	    jl		L5
-	    jmp		L1
-    
-    L5:
-	    mov		[min],ebx
-	    jmp		L1
-
-    L3: 
-
-	    mov		[max],ebx
-	    jmp		L2
+    L3:
+        mov	byte [edi], 0Ah
+	mov	ebx, esi
+	push	input1
+	call	ATOI
+	mov	esi, ebx
+	call	compare@			;So sanh max min
+        mov     eax, [len]
+        dec     eax
+        mov     [len], eax
+	inc	esi
+	mov	edi, input1
+	jmp	L2
 
     L4:
+        mov	byte [edi], 0Ah
+	mov	ebx, esi
+	push	input1
+	call	ATOI
+	mov	esi, ebx
+	call	compare@
+	mov     eax, [len]
+        dec     eax
+        mov     [len], eax
+	cmp	byte [len], 0
+	je	L5
+	jmp	L1
+
+    L5:
         mov 	ebx, [max]
         push    ebx
-	    push	output
-	    call	REATOI
+	push	output
+	call	REATOI
         xor     ecx, ecx
         mov     ecx, output
         mov     edx, 30
@@ -74,8 +91,8 @@ _start:
 
         mov 	ebx, [min]
         push    ebx
-	    push	output
-	    call	REATOI
+	push	output
+	call	REATOI
         xor     ecx, ecx
         mov     ecx, output
         mov     edx, 30
@@ -94,9 +111,31 @@ _start:
         mov     eax, 1
         int     80h
 
+compare@:
+	
+	push	ebp
+	mov	ebp, esp
+	mov	ebx, 0
+	mov	ebx, eax
+	cmp	ebx, [max]
+	jg	L@3
+	jmp	L@2
+
+	L@2:
+		cmp	ebx, [min]
+		jl	L@5
+		pop	ebp
+		ret
+	L@5:
+		mov	[min], ebx
+		pop	ebp
+		ret
+	L@3:
+		mov	[max], ebx
+		jmp	L@2
 
 ATOI:
-        push	ebp
+            push	ebp
 	    mov		ebp, esp
 	    push	ebx
 	    mov		ebx, [ebp+08h]
@@ -116,17 +155,17 @@ ATOI:
 
     L21:
         xor     edx, edx
-	    div		ecx
-	    pop		ebx
-	    pop		ebp
-	    ret		4
+	div	ecx
+	pop	ebx
+	pop	ebp
+	ret	4
 
 REATOI:
 
         push    ebp
         mov     ebp, esp
-	    xor		eax, eax
-	    xor		ebx, ebx
+	xor	eax, eax
+	xor	ebx, ebx
         mov     eax, [ebp + 0Ch]						
         mov     ebx, [ebp + 08h]						
         xor     esi, esi 
