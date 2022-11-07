@@ -1,17 +1,17 @@
 section .data
     dem			dd	0
-	len1		dd  0
+    len1		dd  0
     space		db	' ', 0
-	check		dd	1
+    check		dd	1
     sline1		db  "S = ", 0h
-    sline2      db  "C = ", 0h
-	line_feed	db	0Ah, 0Dh, 0
+    sline2      	db  "C = ", 0h
+    line_feed		db	0Ah, 0Dh, 0
 
 section .bss
-    input		resb	200 
-    line        resb    1
-	output		resb	200 
-    input1		resb	200
+    input		resb	20 
+    line        	resb    1
+    output		resb	20 
+    input1		resb	20
 
 section .text
     global _start
@@ -25,7 +25,7 @@ _start:
         int     80h
 
         mov     ecx, input
-        mov     edx, 200
+        mov     edx, 20
         mov     ebx, 0
         mov     eax, 3
         int     80h
@@ -38,7 +38,7 @@ _start:
         int     80h
 
         mov     ecx, input1
-        mov     edx, 200
+        mov     edx, 20
         mov     ebx, 0
         mov     eax, 3
         int     80h
@@ -57,7 +57,7 @@ _start:
 	    mov		eax, 0
 	    mov		dl,	BYTE  [esi + ebx]
 	    mov		dh,	BYTE  [edi + eax]
-	    cmp		dl, 0Ah
+	    cmp		dl, 0
 	    jz		L5
 	    cmp		dl, dh
 	    je		L2
@@ -83,6 +83,8 @@ _start:
 	    mov		eax, [dem]
 	    inc		eax
 	    mov		[dem], eax
+        sub	    ebx, [len1]
+        inc     ebx
 	    jmp		L1
 
     L5:
@@ -96,7 +98,7 @@ _start:
 
         xor     ecx, ecx
         mov     ecx, output
-        mov     edx, 200
+        mov     edx, 20
         mov     ebx, 1
         mov     eax, 4
         int     80h
@@ -124,7 +126,7 @@ _start:
 
         xor     ecx, ecx
         mov     ecx, output
-        mov     edx, 200
+        mov     edx, 20
         mov     ebx, 1
         mov     eax, 4
         int     80h
@@ -136,6 +138,8 @@ _start:
         mov     eax, 4
         int     80h
         pop     ebx
+        sub	    ebx, [len1]
+        inc     ebx
         jmp     L1
 
     L7:
