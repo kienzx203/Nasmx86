@@ -3,9 +3,10 @@ section .data
 
 section .bss
     input		resb	30 
-	output		resb	30 
+    input1 		resb 	30
+    output		resb	30 
     Tong_chan	resd	1
-	Tong_le		resd	1
+    Tong_le		resd	1
     len			resd	1
 section .text
     global _start
@@ -22,33 +23,52 @@ _start:
         mov     [len], eax
 
     L1:
-        cmp		BYTE [len], 0
-	    jz		L4
-        mov     ecx, input
-        mov     edx, 30
-        mov     ebx, 0
-        mov     eax, 3
-        int     80h
-        dec     BYTE [len]
-        push    input
-        call    ATOI
-        mov		ebx, 0
-	    mov		ecx, 0
-	    mov		ecx,eax
-	    mov		ebx, 2
-	    mov		edx, 0
-	    div		ebx
-	    cmp		edx, 0
-	    jz		L3
-	    jmp		L2
-    L2:	
-	    add		[Tong_le],ecx
-	    jmp		L1
-    L3:
-        add		[Tong_chan],ecx
-	    jmp		L1
+       mov      ecx, input
+       mov      edx, 30
+       mov      ebx, 0
+       mov      eax, 3
+       int      80h
+       mov      esi, input
+       mov      edi, input1
 
+    L2:
+        cmp		byte [esi], 0Ah
+		je      L4
+		cmp	byte [esi], 20h
+		je      L3
+		mov	al, byte [esi]
+		mov	byte [edi], al
+		inc	edi
+		inc	esi
+		jmp	L2
+
+    L3:
+        mov     byte [edi], 0Ah
+        mov     ebx, esi
+        push    input1
+        call    ATOI
+        mov     esi, ebx
+        call    Sum
+        mov     ecx, [len]
+        dec     ecx
+        mov     [len], ecx
+        inc     esi
+        mov     edi, input1 
+        jmp     L2
     L4:
+        mov     byte [edi], 0Ah
+        mov     ebx, esi
+        push    input1
+        call    ATOI
+        mov     esi, ebx
+        call    Sum
+        mov     ecx, [len]
+        dec     ecx
+        mov     [len], ecx
+        cmp     byte [len], 0
+        je      L5
+        jmp     L1
+    L5:
         mov     ecx, [Tong_chan]
         push    ecx
         push    output
@@ -83,14 +103,39 @@ _start:
         mov     eax, 1
         int     80h
 
+Sum:
+    push    ebp
+    mov     ebp, esp
+	L@1:
+		mov	ebx, 0
+		mov	ecx, 0
+		mov	ecx, eax
+		mov	ebx, 2
+		mov	edx, 0
+		div	ebx
+		cmp	edx, 0
+		jz	L@3
+		jmp	L@2
+
+	L@2:
+		add	[Tong_le], ecx
+		pop	ebp
+		ret     
+
+	L@3:
+
+		add	[Tong_chan], ecx
+		pop	ebp
+		ret 
+
 ATOI:
         push	ebp
-	    mov		ebp, esp
-	    push	ebx
-	    mov		ebx, [ebp+08h]
-	    xor		esi, esi								
-	    xor		eax, eax
-	    mov		ecx, 10
+	mov	ebp, esp
+	push	ebx
+	mov	ebx, [ebp+08h]
+	xor	esi, esi								
+	xor	eax, eax
+	mov	ecx, 10
     L12:
 	    xor		edx, edx
 	    mov		dl, BYTE [ebx+esi]				
@@ -103,7 +148,7 @@ ATOI:
 	    jmp		L12
 
     L21:
-        xor     edx, edx
+            xor     	edx, edx
 	    div		ecx
 	    pop		ebx
 	    pop		ebp
@@ -113,8 +158,8 @@ REATOI:
 
         push    ebp
         mov     ebp, esp
-	    xor		eax, eax
-	    xor		ebx, ebx
+	xor	eax, eax
+	xor	ebx, ebx
         mov     eax, [ebp + 0Ch]						
         mov     ebx, [ebp + 08h]						
         xor     esi, esi 
