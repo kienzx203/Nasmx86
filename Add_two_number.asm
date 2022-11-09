@@ -2,13 +2,13 @@ section .data
    	len1	    dd  0
 	len2	    dd  0
 	lenmin	    dd  0
-    input	    db  "Nhap num1 :", 0h
-    input1      db  "Nhap num2 :",0h
-    ketqua      db  "Ket qua :", 0h
+    	input	    db  "Nhap num1 :", 0h
+    	input1      db  "Nhap num2 :",0h
+    	ketqua      db  "Ket qua :", 0h
 section .bss
    	num1        resb    20
    	num2        resb    20
-    num3        resb    20
+    	num3        resb    20
 
 section .text
     global _start
@@ -29,21 +29,21 @@ _start:
         int     80h
 
         push	num1
-		call	LEN
-		mov		[len1], eax
+	call	LEN
+	mov	[len1], eax
         mov     ebx, num1
         add     ebx,eax
         mov     BYTE [ebx], 0
         xor     ebx, ebx
         mov     esi, num1
     L2__:
-        cmp		byte [esi+ebx],30h
-	    jb		L1__
-	    cmp		byte [esi+ebx], 39h
-	    ja		L1__
-	    inc		ebx
-	    cmp		byte[esi + ebx], 0
-	    jnz		L2__
+        cmp	byte [esi+ebx],30h
+	jb	L1__
+	cmp	byte [esi+ebx], 39h
+	ja	L1__
+	inc	ebx
+	cmp	byte[esi + ebx], 0
+	jnz	L2__
 
     L3__:
         xor     ecx, ecx
@@ -68,35 +68,35 @@ _start:
         xor     ebx, ebx 
         mov     esi, num2
     L4__:
-        cmp		byte[esi + ebx], 30h
-	    jb		L3__
-	    cmp		byte[esi + ebx], 39h
-	    ja		L3__
-	    inc		ebx
-	    cmp		byte[esi + ebx], 0
-	    jnz		L4__
+        cmp	byte[esi + ebx], 30h
+	jb	L3__
+	cmp	byte[esi + ebx], 39h
+	ja	L3__
+	inc	ebx
+	cmp	byte[esi + ebx], 0
+	jnz	L4__
 
         push	num1
-		call	CHECK
-		push	num2
-		call	CHECK
+	call	CHECK
+	push	num2
+	call	CHECK
 
         mov	eax, [len1]
-		cmp	eax, [len2]			; len1 > len2
-		jg	L1
-		cmp	eax, [len2]			; len1 < len2
-		jle	L2
+	cmp	eax, [len2]			; len1 > len2
+	jg	L1
+	cmp	eax, [len2]			; len1 < len2
+	jle	L2
 
     L1:
-        mov		eax, [len2] 
-		mov		[lenmin], eax
-		push    num1
-		push    num2
-		mov     eax, [lenmin]
+        mov	eax, [len2] 
+	mov	[lenmin], eax
+	push    num1
+	push    num2
+	mov     eax, [lenmin]
         push    eax
-		call	ADD_TWO
-		push    num3
-		call	CHECK
+	call	ADD_TWO
+	push    num3
+	call	CHECK
 
         xor     ecx, ecx
         mov     ecx, ketqua
@@ -117,15 +117,15 @@ _start:
         int     80h
 
     L2:
-        mov		eax, [len2]
-		mov		[lenmin], eax
-		push	num2
-		push	num1
+        mov	eax, [len2]
+	mov	[lenmin], eax
+	push	num2
+	push	num1
     	mov     eax, [lenmin]
-		push	eax
-		call	ADD_TWO
+	push	eax
+	call	ADD_TWO
     	push    num3
-		call	CHECK
+	call	CHECK
 
         xor     ecx, ecx
         mov     ecx, ketqua
@@ -166,9 +166,9 @@ ADD_TWO:
 	    mov		eax, 0
 	    mov		bl, BYTE [edi]
 	    mov		al, BYTE [esi]
-		cmp		al, 0
-		jz		L93
-		sub		al, 30h
+	    cmp		al, 0
+	    jz		L93
+	    sub		al, 30h
 
 	L93:
 	    sub		bl, 30h
