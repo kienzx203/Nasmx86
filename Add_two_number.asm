@@ -2,7 +2,9 @@ section .data
    	len1	    dd  0
 	len2	    dd  0
 	lenmin	    dd  0
-
+    input	    db  "Nhap num1 :", 0h
+    input1      db  "Nhap num2 :",0h
+    ketqua      db  "Ket qua :", 0h
 section .bss
    	num1        resb    20
    	num2        resb    20
@@ -12,6 +14,14 @@ section .text
     global _start
 
 _start:
+    L1__:
+        xor     ecx, ecx
+        mov     ecx, input 
+        mov     edx, 12
+        mov     ebx, 1
+        mov     eax, 4
+        int     80h
+
         mov     ecx, num1
         mov     edx, 20
         mov     ebx, 0
@@ -24,6 +34,24 @@ _start:
         mov     ebx, num1
         add     ebx,eax
         mov     BYTE [ebx], 0
+        xor     ebx, ebx
+        mov     esi, num1
+    L2__:
+        cmp		byte [esi+ebx],30h
+	    jb		L1__
+	    cmp		byte [esi+ebx], 39h
+	    ja		L1__
+	    inc		ebx
+	    cmp		byte[esi + ebx], 0
+	    jnz		L2__
+
+    L3__:
+        xor     ecx, ecx
+        mov     ecx, input1 
+        mov     edx, 12
+        mov     ebx, 1
+        mov     eax, 4
+        int     80h
 
         mov     ecx, num2
         mov     edx, 20
@@ -37,6 +65,17 @@ _start:
         mov     ebx, num2
         add     ebx,eax
         mov     BYTE [ebx], 0
+        xor     ebx, ebx 
+        mov     esi, num2
+    L4__:
+        cmp		byte[esi + ebx], 30h
+	    jb		L3__
+	    cmp		byte[esi + ebx], 39h
+	    ja		L3__
+	    inc		ebx
+	    cmp		byte[esi + ebx], 0
+	    jnz		L4__
+
         push	num1
 		call	CHECK
 		push	num2
@@ -60,6 +99,13 @@ _start:
 		call	CHECK
 
         xor     ecx, ecx
+        mov     ecx, ketqua
+        mov     edx, 10
+        mov     ebx, 1
+        mov     eax, 4
+        int     80h
+
+        xor     ecx, ecx
         mov     ecx, num3
         mov     edx, 20
         mov     ebx, 1
@@ -80,6 +126,13 @@ _start:
 		call	ADD_TWO
     	push    num3
 		call	CHECK
+
+        xor     ecx, ecx
+        mov     ecx, ketqua
+        mov     edx, 10
+        mov     ebx, 1
+        mov     eax, 4
+        int     80h
 
         xor     ecx, ecx
         mov     ecx, num3
